@@ -37,11 +37,15 @@ function Header() {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="/">
+                <Link className="nav-link active" aria-current="page" to="/">
                   Home
-                </a>
+                </Link>
               </li>
-
+              {user.isAdmin?<li className="nav-item">
+                <Link className="nav-link active" aria-current="page" to="/admin">
+                  Admin
+                </Link>
+  </li>:""}
               <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle"
@@ -51,7 +55,7 @@ function Header() {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  {`${user.firstname} ${user.lastname}`}
+                  {localStorage.getItem('user')&&`${user.firstname} ${user.lastname}`}
                 </a>
                 <ul
                   className="dropdown-menu dropdown-menu-end"
@@ -59,7 +63,7 @@ function Header() {
                 >
                   <li>
                     <Link
-                      classNameName="dropdown-item"
+                      className="dropdown-item"
                       style={{
                         textDecoration: "none",
                         marginLeft: "14px",
@@ -76,7 +80,7 @@ function Header() {
 
                   <li>
                     <Link
-                      classNameName="dropdown-item"
+                      className="dropdown-item"
                       style={{
                         textDecoration: "none",
                         marginLeft: "14px",

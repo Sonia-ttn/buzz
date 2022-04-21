@@ -60,9 +60,9 @@ router.post("/signin", async (req, res) => {
 
   const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY);
  
-  const {_id,firstname,lastname,email}=user
+  const {_id,firstname,lastname,email,isAdmin}=user
  // res.json({data:token,user:{_id,firstname,lastname,email}})
-  res.send({token,user:{_id,firstname,lastname,email}})
+  res.send({token,user:{_id,firstname,lastname,email,isAdmin}})
  //const user1={_id,firstname,lastname,email}
   //res.status(200).send({ data: token ,message: "logged in successfully" });
  //res.header("auth-token", token).send(token);
@@ -73,6 +73,33 @@ router.post("/signin", async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
+
+router.get("/getallusers", verify,async(req, res) => {
+  try {
+      const users = await User.find()
+      res.send(users)
+  } catch (error) {
+      console.log(error)
+      return res.status(400).json(error);
+  }
+});
+
+router.get('/user/:id',verify,(req,res)=>{
+  User.findOne({_id:req.params.id})
+  .select("-password")
+  .then(user=>{
+       Post.find({postedBy:req.params.id})
+       .populate("postedBy","_id name")
+       .exec((err,posts)=>{
+           if(err){
+               return res.status(422).json({error:err})
+           }
+           res.json({user,posts})
+       })
+  }).catch(err=>{
+      return res.status(404).json({error:"User not found"})
+  })
+})
 
 function validatedomain(email) {
   const allowedEmailDomain = "tothenew.com";
@@ -85,8 +112,8 @@ function validatedomain(email) {
 
 const registerValidation = (data) => {
   const schema = Joi.object({
-    firstname: Joi.string().min(6).required(),
-    lastname: Joi.string().min(6).required(),
+    firstname: Joi.string().min(4).required(),
+    lastname: Joi.string().min(4).required(),
     email: Joi.string().min(6).required().email(),
     password: Joi.string().min(6).required(),
   });

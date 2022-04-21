@@ -13,7 +13,7 @@ function Card() {
             </div>
         </div>
         <div className='lower-container'>
-            <h5>{`${user.firstname} ${user.lastname}`}</h5>
+            <h5>{localStorage.getItem('user') &&`${user.firstname} ${user.lastname}`}</h5>
             <h6>Trainee</h6>
         </div>
 

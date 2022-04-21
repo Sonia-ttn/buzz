@@ -6,7 +6,7 @@ const User = require("../models/user");
 module.exports = (req,res,next)=>{
     const {tokn} = req.headers
     console.log(tokn)
-    //authorization === Bearer ewefwegwrherhe
+    
     if(!tokn){
        return res.status(401).json({error:"you must be logged in"})
     }
