@@ -5,6 +5,7 @@ import styles from "./style.module.css";
 import pic from "./logo-large.png";
 import { userContext } from "../../App";
 import { ToastContainer, toast } from 'react-toastify';
+import { GoogleLogin } from 'react-google-login';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
@@ -16,6 +17,30 @@ const Login = () => {
     setData({ ...data, [input.name]: input.value });
   };
   const navigate = useNavigate();
+  //google login
+const onLoginSuccess=async(res)=>{
+  console.log(res);
+  axios({
+    method:"POST",
+    url:"http://localhost:5000/googlelogin",
+    data:{tokenId:res.tokenId}
+  })
+  //if user successfully wants to create an api call and return message from backend api
+ 
+  .then((res) =>{
+    console.log("google login success",res);
+    navigate("/home");
+  })
+  .catch(res=>{
+    console.log("google login failed",res);
+    
+  }
+  )
+}
+
+const onLoginFailure=(error)=>{
+   console.log(error);
+}
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,7 +100,7 @@ const Login = () => {
             />
             {error && <div className={styles.error_msg}>{error}</div>}
             <button type="submit" className={styles.green_btn}  >
-              Sing In
+              Sign In
             </button>
           </form>
         </div>
@@ -83,9 +108,23 @@ const Login = () => {
           <h1>New Here ?</h1>
           <Link to="/signup">
             <button type="button" className={styles.white_btn}>
-              Sing Up
+              Sign Up
             </button>
           </Link>
+          </Link>
+           <p>OR</p>
+
+           <div>
+            <GoogleLogin
+              clientId="905525222638-vpb75i5ilgu84vj74dr1d484rg2q4mt9.apps.googleusercontent.com"
+              buttonText="Log in with Google"
+              onSuccess={onLoginSuccess}
+              onFailure={onLoginFailure}
+              cookiePolicy={'single_host_origin'}
+            /> 
+
+          
+           </div>
         </div>
       </div>
     </div>

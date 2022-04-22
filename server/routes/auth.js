@@ -5,6 +5,16 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const {JWT_SECRET_KEY}=require('../keys')
+//verify if token that logged in with user is same or not
+
+const { OAuth2Client } = require('google-auth-library');
+
+const {CLIENT_ID}=require('../keys')
+
+
+const verify=require('../middleware/verify');
+
+const client=new OAuth2Client(CLIENT_ID);
 
 const verify=require('../middleware/verify')
 
@@ -73,6 +83,71 @@ router.post("/signin", async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
+
+//googlelogin
+router.post('/googlelogin',(req,res)=>{
+
+    
+  //tokenid received from client end
+ const {tokenId}=req.body;
+ //verify token from client and backend
+  client.verifyIdToken({idToken:tokenId,audience:CLIENT_ID})
+  .then(res=>{
+    
+    const {given_name,family_name,email,email_verified}=res.payload;
+    
+    console.log(res.payload);
+  
+    if(email_verified){
+  
+      User.findOne({email}).exec((err,user)=>{
+        if(err){
+           return res.status(400).json({error:"something wrong"});
+          }
+        else{
+          if(user){
+            const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY);
+  
+            const {_id,firstname,lastname,email}=user;
+            res.json({
+              token,
+              user:{_id,firstname,lastname,email}
+            })
+          }
+          else{
+            
+            let password=email+JWT_SECRET_KEY;
+             let newUser=new User({firstname:given_name,lastname:family_name,email,password});
+             console.log(newUser);
+  //saving in db
+             newUser.save((err,data)=>{
+               if(err){
+                 return res.status(400).json({
+                   error:"try again"
+                 })
+               }
+  
+               const token = jwt.sign({ _id: data._id }, JWT_SECRET_KEY);
+  
+               const {_id,
+                firstname,lastname,email}=newUser;
+  
+               res.json({
+                 token,
+                 user:{_id,firstname,lastname,email}
+               })
+             })
+  
+          }
+  
+    
+        }
+      
+    })
+  }
+  })
+})
+
 
 function validatedomain(email) {
   const allowedEmailDomain = "tothenew.com";
