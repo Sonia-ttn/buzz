@@ -10,7 +10,10 @@ const {JWT_SECRET_KEY}=require('../keys')
 const { OAuth2Client } = require('google-auth-library');
 
 const {CLIENT_ID}=require('../keys')
-
+const {API_KEY}=require('../keys')
+const mailgun = require("mailgun-js");
+const DOMAIN = 'sandbox18eab7e802c5422b842a53cf59150e22.mailgun.org';
+const mg = mailgun({apiKey: API_KEY, domain: DOMAIN});
 
 const verify=require('../middleware/verify');
 
@@ -171,7 +174,46 @@ router.post('/googlelogin',(req,res)=>{
   })
 })
 
+//forgot password
+router.put('/forgot-password',(req,res)=>{
+   const {email}=req.body;
+   User.findOne({email},(err,user)=>{
+     if(err || !user){
+       return res.status(400).json({error:
+      "user doesn't exists with this emailid"});
+     }
+     const token =jwt.sign({_id:user._id},JWT_SECRET_KEY);
+     console.log("Token for resetting password",token);
+     const data={
+        from :"noreply@ttn.com",
+        to:email,
+        subject:"Password reset link",
+        html:`
+        <h2>Please click on this link to reset password</h2>
+        <p>${CLIENT_URL}/reset/${token}</p>`
 
+     };
+     return user.updateOne({resetLink:token},(err,succ)=>{
+      if(err){
+        return res.status(400).json({error:"reset password link error"});
+      }
+
+      else{
+        mg.messages().send(data,function(error,body){
+         if(error){
+        return res.json({
+          error:error.message
+       })
+      }
+      
+       return res.json({message:"email sent"}
+     );
+      
+ });
+}
+     })
+   })
+})
 
 
 
