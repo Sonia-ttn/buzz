@@ -120,7 +120,7 @@ const Shop = ({ datas }) => {
   return (
     <div className="feed">
       <div className="feedWrapper">
-        <div class="card" style={{ width: "100%" }}>
+        <div class="card shadow p-3 mb-5 bg-body rounded" style={{ width: "100%" }}>
           <div class="card-banner">
             <h6 class="category-tag technology">
               <img

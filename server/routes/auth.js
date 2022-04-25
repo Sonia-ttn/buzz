@@ -33,7 +33,7 @@ router.post("/signup", async (req, res) => {
     email: req.body.email,
     password: hashedPassword,
   });
-console.log('hello')
+
   try {
     const savedUser = await user.save();
     res.json({ message: "Register Sucessfully" });
@@ -100,6 +100,17 @@ router.get('/user/:id',verify,(req,res)=>{
       return res.status(404).json({error:"User not found"})
   })
 })
+
+router.post("/deleteuser",verify,async(req,res)=>{
+  
+  const {userId}=req.body
+  try {
+     await User.find({_id:userId}).remove()
+     res.send('User Deleted Successfully');
+  } catch (error) {
+    return res.status(400).json({message: error})
+  }
+  })
 
 function validatedomain(email) {
   const allowedEmailDomain = "tothenew.com";

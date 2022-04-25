@@ -6,7 +6,7 @@ const Post = mongoose.model("Post");
 
 router.get("/allpost", verify, async (req, res) => {
   try {
-    const post = await Post.find().populate(
+    const post = await Post.find().sort('-createdAt').populate(
       "postedBy",
       "_id firstname lastname"
     ).populate("comments.postedBy","_id firstname lastname");
@@ -18,7 +18,7 @@ router.get("/allpost", verify, async (req, res) => {
 
 router.post("/createpost", verify, (req, res) => {
   const { title, description, url } = req.body.data1;
-  console.log(req.body.data1);
+  
   if (!title || !description || !url) {
     return res.status(422).json({ error: "Plase add all the fields" });
   }
@@ -50,7 +50,7 @@ router.put('/likepost',verify,(req,res)=>{
         if(err){
             return res.status(422).json({error:err})
         }else{
-           console.log(req.body.postId)
+           
             res.json(result)
             
         }
@@ -100,6 +100,16 @@ router.delete('/deletepost/:postId',verify,(req,res)=>{
     if(err||!res){
       return res.status(422).send({error:err})
     }
+    console.log("in delete",req.user.isAdmin)
+    if(req.user.isAdmin){
+      res.remove()
+      .then(result=>{
+        res.json({message:'Successfully Deleted'})
+      }).catch(err=>{
+        console.log(err)
+      })
+    }
+    
     if(res.postedBy._id.toString()===req.user._id.toString()){
       res.remove()
       .then(result=>{

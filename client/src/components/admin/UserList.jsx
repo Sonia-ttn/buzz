@@ -38,6 +38,28 @@ function UserList() {
     getAllUsers();
   }, []);
   
+  const deleteUser = async (userId) => {
+    try {
+      const url = 'http://localhost:5000/deleteuser';
+      const head = "12 " + localStorage.getItem("token");
+      const res = await axios.post(url, {userId},{
+        headers: {
+          tokn: head,
+        },
+      });
+     
+      window.location.reload();
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status <= 500
+      ) {
+        console.log(error.message);
+      }
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -86,7 +108,7 @@ function UserList() {
                   <img
                     src={pic}
                     className="card-img-top "
-                    style={{ border: "none", height: "200px" }}
+                    style={{ border: "none", height: "220px" }}
                     alt="..."
                   />
                 </div>
@@ -99,11 +121,15 @@ function UserList() {
                       {user.firstname} {user.lastname}
                     </h3>
                     <p className="card-text" style={{ textAlign: "center" }}>
+                      {user._id}
+                    </p>
+                    <p className="card-text" style={{ textAlign: "center" }}>
                       {user.email}
                     </p>
                     <i
                       className="fa fa-trash "
                       style={{ alignItems: "center" }}
+                      onClick={()=>deleteUser(user._id)}
                     ></i>
                   </div>
                 </div>

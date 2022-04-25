@@ -23,3 +23,29 @@
     text-decoration:underline !important;
     cursor:pointer;
   }
+
+
+  .feed{
+    flex:6
+}
+
+
+.feedWrapper{
+    margin:5%;
+    border-radius: 10px;
+    box-shadow: 0px 1px 10px 1px white;
+
+}
+
+.img1{
+    margin: 10px;
+ 
+    margin: auto;
+    display: block;
+}
+
+
+
+
+
+
