@@ -13,6 +13,7 @@ import Home from "./components/Home/Home";
 import CreatePost from "./components/Post/CreatePost";
 import Login from "./components/Login/index";
 import Signup from "./components/signup/index";
+import Forgot from "./components/forgotpassword/index";
 import { reducer, initial } from "./reducers/userReducer";
 import AdminScreen from "./components/admin/AdminScreen";
 import NotFound from './components/NotFound/NotFound'
@@ -49,6 +50,7 @@ const Routing = () => {
         <Route path="/signup" exact element={<Signup />} />
         <Route path="/login" exact element={<Login />} />
         <Route path="/profile" exact element={<UserProfile />} />
+          <Route path="/forgot"  exact element={<Forgot/>}/>
         <Route path="/profile/:userid" exact element={<UserProfile />} />
         {admin ? <Route path="/admin"  element={<AdminScreen />} />:''}
         {admin?<Route path="/admin/userlist"  element={<UserList/>} exact/>:''}
