@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./style.module.css";
 import pic from "./logo-large.png";
 import { userContext } from "../../App";
+import { GoogleLogin } from 'react-google-login';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -17,6 +18,31 @@ const Login = () => {
   };
   const navigate = useNavigate();
 
+  //google login
+const onLoginSuccess=async(res)=>{
+  console.log(res);
+  axios({
+    method:"POST",
+    url:"http://localhost:5000/googlelogin",
+    data:{tokenId:res.tokenId}
+  })
+  //console.log("called")
+  //if user successfully wants to create an api call and return message from backend api
+  //from rest api  not google api
+  .then((res) =>{
+    console.log("google login success",res);
+    navigate("/home");
+  })
+  .catch(error=>{
+    console.log("google login failed",error);
+    
+  }
+  )
+}
+
+const onLoginFailure=(error)=>{
+   console.log(error);
+}
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -86,6 +112,19 @@ const Login = () => {
               Sign Up
             </button>
           </Link>
+          <p>OR</p>
+
+           <div>
+            <GoogleLogin
+              clientId="905525222638-vpb75i5ilgu84vj74dr1d484rg2q4mt9.apps.googleusercontent.com"
+              buttonText="Log in with Google"
+              onSuccess={onLoginSuccess}
+              onFailure={onLoginFailure}
+              cookiePolicy={'single_host_origin'}
+            /> 
+
+          
+           </div>
         </div>
       </div>
     </div>
