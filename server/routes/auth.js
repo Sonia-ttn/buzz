@@ -4,6 +4,14 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+
+//verify if token that logged in with user is same or not
+
+const { OAuth2Client } = require('google-auth-library');
+
+const {CLIENT_ID}=require('../keys')
+
+
 const {JWT_SECRET_KEY}=require('../keys')
 const {CLIENT_URL}=require('../keys')
 const {API_KEY}=require('../keys')
@@ -11,6 +19,8 @@ const mailgun = require("mailgun-js");
 const DOMAIN = 'sandbox18eab7e802c5422b842a53cf59150e22.mailgun.org';
 const mg = mailgun({apiKey: API_KEY, domain: DOMAIN});
 
+
+const client=new OAuth2Client(CLIENT_ID);
 const verify=require('../middleware/verify')
 
 router.get('/verify',verify,(req,res)=>{
@@ -78,6 +88,65 @@ router.post("/signin", async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
+
+//googlelogin
+router.post('/googlelogin',(req,res)=>{
+  //tokenid received from client end
+ const {tokenId}=req.body;
+ //verify token from client and backend
+  client.verifyIdToken({idToken:tokenId,audience:CLIENT_ID})
+  .then(res=>{
+    const {given_name,family_name,email,email_verified}=res.payload;
+    console.log(res.payload);
+  
+    if(email_verified){
+      User.findOne({email}).exec((err,user)=>{
+        if(err){
+           return res.status(400).send({error:"something wrong"});
+          }
+        else{
+          if(user){
+            const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY);
+            console.log(token);
+            const {_id,firstname,lastname,email}=user;
+            console.log(user);
+            //res.json({
+              
+              res.send({token,user:{_id,firstname,lastname,email}})
+             
+             
+              console.log("hi");
+                }
+          else{
+            let password=email+JWT_SECRET_KEY;
+             let newUser=new User({firstname:given_name,lastname:family_name,email,password});
+             console.log(newUser);
+              //saving in db
+             newUser.save((err,data)=>{
+               if(err){
+                 return res.status(400).send({
+                   error:"try again"
+                 })
+               }
+             
+  
+               const token = jwt.sign({ _id: data._id }, JWT_SECRET_KEY);
+               console.log(token);
+
+               const {_id,
+                firstname,lastname,email}=newUser;
+  
+               res.send({
+                 token,
+                 user:{_id,firstname,lastname,email}
+                })
+              })
+          }
+      }
+  })
+  }
+})
+})
 
 router.get("/getallusers", verify,async(req, res) => {
   try {
