@@ -147,6 +147,54 @@ router.put('/forgot-password',(req,res)=>{
    })
 })
 
+//reset-password
+router.put('/resetpassword',(req,res)=>{
+
+//link from client side
+  const {resetLink,newPassword}=req.body;
+  if(resetLink){
+    jwt.verify(resetLink,JWT_SECRET_KEY,(error,data)=>{
+      if(error){
+        return res.status(401).json({error:"Incorrect token"
+      })
+      }
+User.findOne({resetLink},(err,user)=>{
+  if(err || !user){
+    return res.status(400).json({error:
+   "user doesn't exists with this token"});
+  }
+  const obj={
+    password:newPassword,
+    resetLink:""
+  }
+  //extends prop will update the obj in db
+  user=_.extend(user,obj);
+  user.save((err,result)=>{
+    if(err){
+      return res.status(400).json({error:"reset password error"});
+    }
+
+    else{
+     
+     return res.status(200).json({message:"password changed"});
+
+}
+   })
+  
+})
+    })
+  }
+  else{
+    
+      return res.status(401).json({error:
+     "Authentication error!!!"});
+    
+  }
+
+
+
+});
+
 router.post("/deleteuser",verify,async(req,res)=>{
   
   const {userId}=req.body
