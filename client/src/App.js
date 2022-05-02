@@ -14,11 +14,13 @@ import CreatePost from "./components/Post/CreatePost";
 import Login from "./components/Login/index";
 import Signup from "./components/signup/index";
 import Forgot from "./components/forgotpassword/index";
+import Reset from "./components/resetpassword/index";
 import { reducer, initial } from "./reducers/userReducer";
 import AdminScreen from "./components/admin/AdminScreen";
 import NotFound from './components/NotFound/NotFound'
 import UserList from "./components/admin/UserList";
 import AllPost from "./components/admin/AllPost";
+
 
 export const userContext = createContext();
 
@@ -56,6 +58,7 @@ const Routing = () => {
         {admin?<Route path="/admin/userlist"  element={<UserList/>} exact/>:''}
             {admin?<Route path="/admin/allposts"  element={<AllPost/>} exact/>:""}
         <Route path='*' element={<NotFound/>} exact/>
+         <Route path="/reset/token/:resetLink"  exact element={<Reset/>}/>
         {/* <Route path="/" element={<Navigate replace to="/login" />} />*/}
       </Route>
     </Routes>
