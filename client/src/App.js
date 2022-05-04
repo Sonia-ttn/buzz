@@ -13,6 +13,7 @@ import Home from "./components/Home/Home";
 import CreatePost from "./components/Post/CreatePost";
 import Login from "./components/Login/index";
 import Signup from "./components/signup/index";
+import FriendsList from "./components/Friends/FriendsList";
 import Forgot from "./components/forgotpassword/index";
 import Reset from "./components/resetpassword/index";
 import { reducer, initial } from "./reducers/userReducer";
@@ -60,6 +61,7 @@ const Routing = () => {
         <Route path='*' element={<NotFound/>} exact/>
          <Route path="/reset/token/:resetLink"  exact element={<Reset/>}/>
         {/* <Route path="/" element={<Navigate replace to="/login" />} />*/}
+        <Route path="/friends" exact element={<FriendsList />} />
       </Route>
     </Routes>
   );

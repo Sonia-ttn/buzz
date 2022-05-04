@@ -41,7 +41,8 @@ function Header() {
                   Home
                 </Link>
               </li>
-              {user.isAdmin?<li className="nav-item">
+              
+              { user.isAdmin?<li className="nav-item">
                 <Link className="nav-link active" aria-current="page" to="/admin">
                   Admin
                 </Link>
@@ -91,6 +92,29 @@ function Header() {
                       Post
                     </Link>
                   </li>
+
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+
+
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      style={{
+                        textDecoration: "none",
+                        marginLeft: "14px",
+                        color: "black",
+                      }}
+                      to="/friends"
+                    >
+                      Friends
+                    </Link>
+                  </li>
+
+
+
+                
 
                   <li>
                     <hr className="dropdown-divider" />
