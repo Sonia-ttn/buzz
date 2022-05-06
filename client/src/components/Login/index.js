@@ -17,25 +17,39 @@ const Login = () => {
     setData({ ...data, [input.name]: input.value });
   };
   const navigate = useNavigate();
-  //google login
+  
+//google login
 const onLoginSuccess=async(res)=>{
   console.log(res);
+
   axios({
     method:"POST",
     url:"http://localhost:5000/googlelogin",
-    data:{tokenId:res.tokenId}
+    data:{tokenId:res.tokenId},
+    headers:{
+      'content-Type':'application/json',
+    }
   })
+  //console.log("called")
   //if user successfully wants to create an api call and return message from backend api
- 
+  //from rest api  not google api
   .then((res) =>{
+  
     console.log("google login success",res);
+
+    toast.success("sucesssfully logged in!!")
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user",  JSON.stringify(res.data.user));
+    
     navigate("/home");
   })
-  .catch(res=>{
-    console.log("google login failed",res);
+  .catch(error=>{
+    console.log("google login failed",error);
+    toast.error("Login error");
     
   }
   )
+
 }
 
 const onLoginFailure=(error)=>{
