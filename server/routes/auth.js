@@ -90,63 +90,92 @@ router.post("/signin", async (req, res) => {
 });
 
 //googlelogin
-router.post('/googlelogin',(req,res)=>{
+router.post('/googlelogin',(req,response)=>{
   //tokenid received from client end
  const {tokenId}=req.body;
  //verify token from client and backend
   client.verifyIdToken({idToken:tokenId,audience:CLIENT_ID})
   .then(res=>{
     const {given_name,family_name,email,email_verified}=res.payload;
-    console.log(res.payload);
+   // console.log("**",email);
+    //console.log(res.payload);
   
     if(email_verified){
-      User.findOne({email}).exec((err,user)=>{
+      //return res.status(400).send({error:"something wrong"});
+      //const temp=
+      User.findOne({"email":email}).exec((err,user)=>{
         if(err){
-           return res.status(400).send({error:"something wrong"});
+           return response.status(400).send({error:"something wrong"});
           }
         else{
           if(user){
-            const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY);
-            console.log(token);
-            const {_id,firstname,lastname,email}=user;
-            console.log(user);
-            //res.json({
+             //console.log("**",user);
+              const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY);
+              console.log("token",token);
+              const {_id,firstname,lastname,email}=user;
+              console.log(user);
               
-              res.send({token,user:{_id,firstname,lastname,email}})
-             
-             
-              console.log("hi");
-                }
+                //console.log({token,user:{_id,firstname,lastname,email}});
+  
+              //sending res to client
+              console.log("hi exis user");
+              //return user
+              
+              //return response.json({token,firstname,lastname,email});
+                return response.json({token,user:{_id,firstname,lastname,email}})
+              
+            
+              
+            
+              
+            
+          }
           else{
-            let password=email+JWT_SECRET_KEY;
-             let newUser=new User({firstname:given_name,lastname:family_name,email,password});
-             console.log(newUser);
-              //saving in db
-             newUser.save((err,data)=>{
-               if(err){
-                 return res.status(400).send({
-                   error:"try again"
-                 })
-               }
-             
-  
-               const token = jwt.sign({ _id: data._id }, JWT_SECRET_KEY);
-               console.log(token);
+            
+              let password=email+JWT_SECRET_KEY;
+              let newUser=new User({firstname:given_name,lastname:family_name,email,password});
+              console.log(newUser);
+               //saving in db
+              newUser.save((err,data)=>{
+                if(err){
+                  return response.status(400).send({
+                    error:"try again"
+                  })
+                }
+              
+   
+                const token = jwt.sign({ _id: data._id }, JWT_SECRET_KEY);
+                console.log(token);
+ 
+                const {_id,
+                 firstname,lastname,email}=newUser;
+                 console.log(" hii new user!!")
+ 
+               //sending res to client
+                //return res.json({token,user:{_id,firstname,lastname,email}})
+                return response.json({token,firstname,lastname,email});
 
-               const {_id,
-                firstname,lastname,email}=newUser;
-  
-               res.send({
-                 token,
-                 user:{_id,firstname,lastname,email}
-                })
-              })
+               })
+            
+           
           }
       }
   })
+ 
+    
+  }
+  else {
+    console.log("email verif failed!!")
+    return response.status(400).send(
+      'Google login failed. Try again'
+    );
   }
 })
+.catch((error)=>{
+  response.status(500).send({ message: "Token Verification failed" });
 })
+})
+
 
 router.get("/getallusers", verify,async(req, res) => {
   try {
