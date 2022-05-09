@@ -97,8 +97,9 @@ router.post('/googlelogin',(req,response)=>{
   client.verifyIdToken({idToken:tokenId,audience:CLIENT_ID})
   .then(res=>{
     const {given_name,family_name,email,email_verified}=res.payload;
-   // console.log("**",email);
-    //console.log(res.payload);
+   console.log("**",email);
+   //console.log(email_verified);
+   //console.log(res.payload);
   
     if(email_verified){
       //return res.status(400).send({error:"something wrong"});
@@ -123,17 +124,13 @@ router.post('/googlelogin',(req,response)=>{
               
               //return response.json({token,firstname,lastname,email});
                 return response.json({token,user:{_id,firstname,lastname,email}})
-              
-            
-              
-            
-              
-            
+          
           }
           else{
-            
-              let password=email+JWT_SECRET_KEY;
-              let newUser=new User({firstname:given_name,lastname:family_name,email,password});
+              bcrypt.hash(email,10)
+              .then((hashpasswordd)=>{
+                console.log(hashpasswordd)
+                let newUser=new User({firstname:given_name,lastname:family_name,email,password:hashpasswordd});
               console.log(newUser);
                //saving in db
               newUser.save((err,data)=>{
@@ -153,16 +150,23 @@ router.post('/googlelogin',(req,response)=>{
  
                //sending res to client
                 //return res.json({token,user:{_id,firstname,lastname,email}})
-                return response.json({token,firstname,lastname,email});
+                return response.json({token,user:{_id,firstname,lastname,email}})
+                //return response.json({token,firstname,lastname,email});
 
                })
+              })
+
+              .catch(err=>{
+                console.log("error",err);
+              })
+
+            
             
            
           }
       }
   })
  
-    
   }
   else {
     console.log("email verif failed!!")
@@ -175,6 +179,7 @@ router.post('/googlelogin',(req,response)=>{
   response.status(500).send({ message: "Token Verification failed" });
 })
 })
+
 
 
 router.get("/getallusers", verify,async(req, res) => {
@@ -247,50 +252,52 @@ router.put('/forgot-password',(req,res)=>{
 
 //reset-password
 router.put('/resetpassword',(req,res)=>{
-
+  
 //link from client side
   const {resetLink,newPassword}=req.body;
+
   if(resetLink){
     jwt.verify(resetLink,JWT_SECRET_KEY,(error,data)=>{
       if(error){
         return res.status(401).json({error:"Incorrect token"
       })
       }
-User.findOne({resetLink},(err,user)=>{
-  if(err || !user){
-    return res.status(400).json({error:
-   "user doesn't exists with this token"});
-  }
-  const obj={
-    password:newPassword,
-    resetLink:""
-  }
-  //extends prop will update the obj in db
-  user=_.extend(user,obj);
-  user.save((err,result)=>{
-    if(err){
-      return res.status(400).json({error:"reset password error"});
-    }
-
-    else{
+    User.findOne({resetLink},(err,user)=>{
+      if(err || !user){
+        return res.status(400).json({error:"user doesn't exists with this token"});
+      } 
      
-     return res.status(200).json({message:"password changed"});
+      bcrypt.hash(newPassword,10)
+      .then(hashpassword=>{
+        const obj={
+          password:hashpassword,
+          resetLink:""
+          }
+          //extends prop will update the obj in db
+          user=_.extend(user,obj);
+          user.save((err,result)=>{
+              if(err){
+                return res.status(400).json({error:"could not save!!reset password error"});
+              }  
+    
+              else{
+         
+                return res.status(200).json({message:"password changed"});
+    
+                }
+            })
+      })
+      .catch(err=>{
+        console.log("error",err);
+      })
 
-}
-   })
-  
-})
+      
+      })
     })
   }
   else{
-    
-      return res.status(401).json({error:
-     "Authentication error!!!"});
-    
+    return res.status(401).json({error:"Authentication error!!!"});
   }
-
-
-
 });
 
 router.post("/deleteuser",verify,async(req,res)=>{
