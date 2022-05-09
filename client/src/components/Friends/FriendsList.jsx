@@ -4,11 +4,13 @@ import pic from "./user.png";
 import Header from "../header/Header";
 import "./stylemodule.css";
 
+
+
 function FriendsList() {
   const [searchKey, setSearchKey] = useState("");
   const [data, setData] = useState([]);
   const user1 = JSON.parse(localStorage.getItem("user"));
-  console.log(JSON.parse(localStorage.getItem("user"))._id);
+  //console.log(JSON.parse(localStorage.getItem("user"))._id);
   const getAllUsers = async () => {
     try {
       const url = "http://localhost:5000/getallusers";
@@ -36,9 +38,40 @@ function FriendsList() {
       }
     }
   };
+
   useEffect(() => {
     getAllUsers();
   }, []);
+
+
+  const follow = async (user_id) => {
+    try {
+      const url = "http://localhost:5000/follow";
+      const head = "12 " + localStorage.getItem("token");
+      const res = await axios.put(
+        url,
+        { followId: user_id },
+        {
+          headers: {
+            tokn: head,
+          },
+        }
+      );
+    
+        console.log(res)
+      window.location.reload();
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status <= 500
+      ) {
+        console.log(error);
+      }
+    }
+  };
+
+
 
   return (
     <div>
@@ -75,11 +108,7 @@ function FriendsList() {
                 style={{ width: "450px", marginTop: "20px",height:'150px' }}
                 key={user._id}
               >
-                {console.log(
-                  JSON.parse(localStorage.getItem("user"))._id,
-                  " ",
-                  user._id
-                )}
+                
                 <div className="row  g-0">
                   <div className="col-sm-5">
                     <img
@@ -97,7 +126,8 @@ function FriendsList() {
                       >
                         {user.firstname} {user.lastname}
                       </h3>
-                      <button
+                      
+                      {user.followers.includes(user1._id)?<button
               id="post"
               className="btn btn-primary"
               style={{
@@ -111,9 +141,27 @@ function FriendsList() {
                 justifyContent:'center',
                 alignItems:'center',
               }}
+              
+            >
+              Un-Follow
+            </button>:<button
+              id="post"
+              className="btn btn-primary"
+              style={{
+                border: "none",
+                borderRadius: "25%",
+                marginTop: "15px",
+                marginLeft:'30px',
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                display:'flex',
+                justifyContent:'center',
+                alignItems:'center',
+              }}
+              onClick={()=>follow(user._id)}
             >
               Follow
-            </button>
+            </button>}
                     </div>
                   </div>
                 </div>
