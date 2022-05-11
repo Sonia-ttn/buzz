@@ -71,6 +71,33 @@ function FriendsList() {
     }
   };
 
+  const unfollow = async (user_id) => {
+    try {
+      const url = "http://localhost:5000/unfollow";
+      const head = "12 " + localStorage.getItem("token");
+      const res = await axios.put(
+        url,
+        { unfollowId: user_id },
+        {
+          headers: {
+            tokn: head,
+          },
+        }
+      );
+    
+        console.log(res)
+      window.location.reload();
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status <= 500
+      ) {
+        console.log(error);
+      }
+    }
+  };
+
 
 
   return (
@@ -141,6 +168,7 @@ function FriendsList() {
                 justifyContent:'center',
                 alignItems:'center',
               }}
+              onClick={()=>unfollow(user._id)}
               
             >
               Un-Follow
