@@ -338,4 +338,15 @@ const loginValidation = (data) => {
   return schema.validate(data);
 };
 
+router.get("/followersfollowing", verify,async(req, res) => {
+  try {
+      const userinfo = await User.find({_id:req.user._id})
+      console.log(userinfo)
+      res.send(userinfo)
+  } catch (error) {
+      console.log(error)
+      return res.status(400).json(error);
+  }
+});
+
 module.exports = router;

@@ -3,8 +3,13 @@ import pic from "./user.png";
 import {Link} from 'react-router-dom'
 
 function MyPost({datas}) {
+
+  
+
+
   return (
     <div>{datas.firstname}
+    {console.log(datas)}
     
     
     <div className="feed" >
@@ -26,12 +31,7 @@ function MyPost({datas}) {
            >
              <div className="card-banner">
                <h6 className="category-tag technology">
-                 <img
-                   className="shareProfileImg"
-                   style={{ margin: "5px", border: "none" }}
-                   src={pic}
-                   alt=""
-                 />
+                 
  
                  <span>
                    <Link
@@ -43,17 +43,7 @@ function MyPost({datas}) {
                        margin: "15px",
                      }}
                    >
-                     {datas.postedBy.firstname}
- 
-                    {/* <i
-                       className="fa fa-trash-o"
-                       style={{
-                         float: "right",
-                         marginTop: "18px",
-                         marginRight: "30px",
-                       }}
-                       onClick={() => deletePost(datas._id)}
-                    ></i>*/}
+                    
                    </Link>
                  </span>
                </h6>

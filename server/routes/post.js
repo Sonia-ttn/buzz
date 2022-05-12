@@ -182,6 +182,19 @@ router.put("/unfollow", verify, (req, res) => {
   );
 });
 
+router.get("/mypost", verify, (req, res) => {
+  Post.find({ postedBy: req.user._id })
+  .sort("-createdAt")
+    .populate("postedBy", "_id firstname")
+    .populate("comments.postedBy", "_id firstname lastname")
+    .then((mypost) => {
+      res.json({ mypost });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
 
 
 module.exports = router;

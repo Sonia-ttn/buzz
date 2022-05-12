@@ -9,6 +9,9 @@ function UserProfile() {
   const user = JSON.parse(localStorage.getItem("user"));
   const [showResults, setShowResults] = useState(false)
   const [data, setData] = useState([]);
+  const [followers, setfollowers] = useState([]);
+  const [following, setfollowing] = useState([]);
+ 
 
   const getPost = async () => {
     try {
@@ -21,8 +24,33 @@ function UserProfile() {
       });
 
     //  console.log(post);
-      console.log(post.data.mypost);
+     // console.log(post.data.mypost);
       setData(post.data.mypost)
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.status >= 400 &&
+        error.response.status <= 500
+      ) {
+        console.log(error);
+      }
+    }
+  };
+
+  const getfollowersfollowing = async () => {
+    try {
+      const url = "http://localhost:5000/followersfollowing";
+      const head = "12 " + localStorage.getItem("token");
+      const  userinfo  = await axios.get(url, {
+        headers: {
+          tokn: head,
+        },
+      });
+
+   console.log(userinfo.data[0])
+   setfollowers(userinfo.data[0].followers)
+   setfollowing(userinfo.data[0].following)
+    
     } catch (error) {
       if (
         error.response &&
@@ -35,6 +63,7 @@ function UserProfile() {
   };
   useEffect(() => {
     getPost();
+    getfollowersfollowing();
     
   }, []);
   const mypost=()=>{
@@ -45,7 +74,8 @@ function UserProfile() {
           setShowResults(true)
       }
   }
-  console.log(data)
+  console.log(followers)
+  console.log(following)
   return (
     <div>
       <Header />
@@ -59,12 +89,15 @@ function UserProfile() {
                 style={{ border: "none" }}
                 src={pic}
               />
+             
               <span className="font-weight-bold" style={{marginTop:"20px"}}>
                 <h5 className="text-secondary">{localStorage.getItem("user") &&
                   `${user.firstname} ${user.lastname}`}</h5>
               </span>
               <span className="text-black-50" style={{marginTop:"10px"}}>{`${user.email}`}</span>
               <span className="text-black-50" style={{marginTop:"10px"}}><h6 className="text-primary">My Total Posts : {`${data.length}`}</h6></span>
+              <span className="text-black-50" style={{marginTop:"10px"}}><h6 className="text-primary">Followers : {`${followers.length}`}</h6></span>
+              <span className="text-black-50" style={{marginTop:"10px"}}><h6 className="text-primary">Following : {`${following.length}`}</h6></span>
               <div className="mt-5 text-center">
                 <button
                   className="btn btn-primary profile-button"
