@@ -311,6 +311,41 @@ router.post("/deleteuser",verify,async(req,res)=>{
   }
   })
 
+router.put("/editpro",verify,async(req,res)=>{
+  try{
+    const user= await User.findById(req.user._id)
+   if(user){
+     user.firstname=req.body.firstname ||user.firstname
+     user.lastname=req.body.lastname || user.lastname
+     user.designation=req.body.designation||user.designation
+     user.gender=req.body.gender||user.gender
+     user.birthday=req.body.birthday||user.birthday
+     user.city=req.body.city||user.city
+     user.state=req.body.state||user.state
+
+     const updateUser=await user.save()
+     //console.log("dd")
+     res.json({
+       _id:user._id,
+       firstname:updateUser.firstname,
+       lastname:updateUser.lastname,
+       email:updateUser.email,
+       designation:updateUser.designation,
+       gender:updateUser.gender,
+       birthday:updateUser.birthday,
+       city:updateUser.city,
+       state:updateUser.state,
+       
+
+     })
+   }
+  }
+  catch (error) {
+    console.log(error)
+    return res.status(400).json(error);
+}
+})
+
 function validatedomain(email) {
   const allowedEmailDomain = "tothenew.com";
   if (email.split("@")[1] === allowedEmailDomain) {
