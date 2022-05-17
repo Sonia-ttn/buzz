@@ -9,6 +9,11 @@ const Signup = () => {
 		lastname: "",
 		email: "",
 		password: "",
+		designation:"",
+		city:"",
+		regions:"",
+		birthday:"",
+		gender:""
 	});
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
@@ -83,6 +88,53 @@ const Signup = () => {
 							name="password"
 							onChange={handleChange}
 							value={data.password}
+							required
+							className={styles.input}
+						/>
+					        <input
+							type="text"
+							placeholder="designation"
+							name="designation"
+							onChange={handleChange}
+							value={data.designation}
+							required
+							className={styles.input}
+						/>
+						<input
+							type="text"
+							placeholder="city"
+							name="city"
+							onChange={handleChange}
+							value={data.city}
+							required
+							className={styles.input}
+						/>
+						<input
+							type="text"
+							placeholder="state/region"
+							name="state/region"
+							onChange={handleChange}
+							value={data.regions}
+							required
+							className={styles.input}
+						/>
+						
+						<input
+							type="date"
+							placeholder="birthday"
+							name="birthday"
+							onChange={handleChange}
+							value={data.birthday}
+							required
+							className={styles.input}
+						/>
+						
+						<input
+							type="text"
+							placeholder="gender"
+							name="gender"
+							onChange={handleChange}
+							value={data.gender}
 							required
 							className={styles.input}
 						/>
