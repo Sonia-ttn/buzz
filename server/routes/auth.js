@@ -30,7 +30,8 @@ router.get('/verify',verify,(req,res)=>{
 router.post("/signup", async (req, res) => {
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  const { firstname,lastname, email, password } = req.body;
+  //destructuring values received from  front end
+  const { firstname,lastname, email, password,designation,city,regions,birthday,gender } = req.body;
  
 
   if (!validatedomain(email))
@@ -47,6 +48,11 @@ router.post("/signup", async (req, res) => {
     lastname: req.body.lastname,
     email: req.body.email,
     password: hashedPassword,
+    designation:req.body.designation,
+    city:req.body.city,
+    regions:req.body.regions,
+    birthday:req.body.birthday,
+    gender:req.body.gender
   });
 
   try {
@@ -357,10 +363,16 @@ function validatedomain(email) {
 
 const registerValidation = (data) => {
   const schema = Joi.object({
-    firstname: Joi.string().min(4).required(),
-    lastname: Joi.string().min(4).required(),
+    firstname: Joi.string().min(6).required(),
+    lastname: Joi.string().min(6).required(),
     email: Joi.string().min(6).required().email(),
     password: Joi.string().min(6).required(),
+    designation:Joi.string().min(6).required(),
+    gender:Joi.string().min(4).required(),
+    birthday:Joi.date().raw().required(),
+    city:Joi.string().min(4).required(),
+    regions:Joi.string().min(4).required(),
+
   });
   return schema.validate(data);
 };
